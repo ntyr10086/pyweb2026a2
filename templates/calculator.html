@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>數學運算</title>
+    <style>
+        input, select, button {
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>數學運算</h2>
+    
+    <form method="post">
+        <input type="number" name="x" step="any" placeholder="請輸入x" required>
+        
+        <select name="opt">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+        </select>
+        
+        <input type="number" name="y" step="any" placeholder="請輸入y" required>
+        
+        <button type="submit">計算</button>
+    </form>
+
+    <hr>
+
+    {# 這裡會顯示計算結果 #}
+    {% if result is not none %}
+        <h3>結果是：{{ result }}</h3>
+    {% else %}
+        <p>請輸入數字並按下計算 </p>
+    {% endif %}
+
+    <br>
+    <a href="/">回到網站首頁</a>
+</body>
+</html>
