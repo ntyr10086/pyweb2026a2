@@ -81,7 +81,7 @@ def read():
     # 根據 mail 排序取 3 筆
     docs = collection_ref.order_by("mail", direction=firestore.Query.DESCENDING).limit(3).get()
     
-    Temp = "<h3>資料庫前三筆資料：</h3>"
+    Temp = ""
     for doc in docs:
         Temp += str(doc.to_dict()) + "<br>"
     return Temp + "<br><a href=/>回到首頁</a>"
