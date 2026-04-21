@@ -1,3 +1,6 @@
+import requests
+from bs4 import BeautifulSoup
+
 import os
 import json
 import firebase_admin
@@ -34,10 +37,16 @@ def index():
     link += "<a href=/app>數學運算</a><hr>"
     link += "<a href=/cup>擲茭</a><hr>"
     link += "<a href=/read>讀取Firestore資料</a><hr>"
-    
     # 老師查詢表單
     link += "<a href=/search>查詢老師及其研究室</a><hr>"
+    link += "<a href=/spider1>爬蟲</a><hr>"
     return link  
+
+@app.route("/spider1")
+def spider1():
+    R = "2026"
+    return R
+
 
 @app.route("/search")
 def search():
@@ -86,7 +95,6 @@ def read():
         Temp += str(doc.to_dict()) + "<br>"
     return Temp + "<br><a href=/>回到首頁</a>"
 
-# --- 這裡往下是其他功能，確保不要有重複的 read ---
 
 @app.route("/mis")
 def course():
