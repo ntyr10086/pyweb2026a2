@@ -40,21 +40,38 @@ def index():
     # 老師查詢表單
     link += "<a href=/search>查詢老師及其研究室</a><hr>"
     link += "<a href=/spider1>爬蟲</a><hr>"
+    link += "<a href=/spider2>查詢即將上映電影</a><hr>"
     return link  
 
-@app.route("/spider1")
-def spider1():
-    R = ""
-    url = "https://pyweb2026a.vercel.app/about"
+@app.route("/spider2")
+def spider2():
+    R = "<h1>開眼電影即將上映</h1>" # 加個大標題比較可愛
+    url = "https://www.atmovies.com.tw/movie/next/"
     Data = requests.get(url)
     Data.encoding = "utf-8"
-    #print(Data.text)
+    
     sp = BeautifulSoup(Data.text, "html.parser")
-    result=sp.select("td a")
+    result = sp.select(".filmListAllX li")
 
     for item in result:
-        R += item.text + "<br>"+ item.get("href") + "<br><br>"
-    return R
+        # 1. 抓取連結標籤 <a>
+        a_tag = item.find("a")
+        # 2. 抓取圖片標籤 <img>
+        img_tag = item.find("img")
+        
+        if a_tag and img_tag:
+            name = img_tag.get("alt") # 電影名稱
+            # 記得把相對網址補全
+            link = "https://www.atmovies.com.tw" + a_tag.get("href")
+            
+            # 把資訊組合成 HTML 字串
+            R += f"<b>電影名稱：</b>{name}<br>"
+            R += f"<b>介紹連結：</b><a href='{link}'>{link}</a><br><br>"
+            
+            # 同時在終端機印出來給你看進度
+            print(f"抓到囉：{name}")
+
+    return R # 確定所有東西都加進 R 了，最後才送出！
 
 
 @app.route("/search")
