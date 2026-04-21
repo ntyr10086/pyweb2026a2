@@ -44,7 +44,16 @@ def index():
 
 @app.route("/spider1")
 def spider1():
-    R = "2026"
+    R = ""
+    url = "https://pyweb2026a.vercel.app/about"
+    Data = requests.get(url)
+    Data.encoding = "utf-8"
+    #print(Data.text)
+    sp = BeautifulSoup(Data.text, "html.parser")
+    result=sp.select("td a")
+
+    for item in result:
+        R += item.text + "<br>"+ item.get("href") + "<br><br>"
     return R
 
 
