@@ -42,6 +42,7 @@ def index():
     link += "<a href=/spider1>爬蟲</a><hr>"
     link += "<a href=/spider2>查詢即將上映電影</a><hr>"
     link += "<a href=/movie>讀取開眼電影即將上映影片，寫入Firestore</a><hr>"
+    link += "<a href=/search>查詢開眼電影即將上映電影</a><hr>"
 
     return link  
 
@@ -80,6 +81,43 @@ def movie():
     doc_ref = db.collection("電影").document(movie_id)
     doc_ref.set(doc)    
   return "近期上映電影已爬蟲及存檔完畢，網站最近更新日期為：" + lastUpdate 
+
+
+
+@app.route("/search", methods=["POST", "GET"])
+def searchQ():
+    if request.method == "POST":
+        MovieTitle = request.form["MovieTitle"]
+        info = f"<h2>您查詢的關鍵字是：{MovieTitle}</h2>"
+        db = firestore.client()     
+        collection_ref = db.collection("電影")
+        docs = collection_ref.order_by("showDate").get()
+        
+        found = False
+        for doc in docs:
+            m_data = doc.to_dict()
+            if MovieTitle in m_data["title"]: 
+                found = True
+                info += f"片名：{m_data['title']}<br>" 
+                info += f"影片介紹：{m_data['hyperlink']}<br>"
+                info += f"片長：{m_data['showLength']} 分鐘<br>" 
+                info += f"上映日期：{m_data['showDate']}<br><br>"
+        
+        if not found:
+            info += "找不到相關電影"
+            
+        return info + "<br><a href='search'>回查詢頁面</a>"
+    
+    else:  
+        # 直接在這裡寫 HTML 表單，就不需要 input.html 檔案了！
+        return '''
+            <form method="post">
+                <p>請輸入欲查詢的片名：
+                <input type="text" name="MovieTitle" />
+                <button type="submit">確定送出</button>
+                </p>
+            </form>
+        '''
 
 
 @app.route("/spider2")
