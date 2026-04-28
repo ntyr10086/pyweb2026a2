@@ -42,7 +42,7 @@ def index():
     link += "<a href=/spider1>爬蟲</a><hr>"
     link += "<a href=/spider2>查詢即將上映電影</a><hr>"
     link += "<a href=/movie>讀取開眼電影即將上映影片，寫入Firestore</a><hr>"
-    link += "<a href=/search>查詢開眼電影即將上映電影</a><hr>"
+    link += "<a href=/movie2>查詢開眼電影即將上映電影</a><hr>"
 
     return link  
 
@@ -84,7 +84,7 @@ def movie():
 
 
 
-@app.route("/search", methods=["POST", "GET"])
+@app.route("/movie2", methods=["POST", "GET"])
 def searchQ():
     if request.method == "POST":
         MovieTitle = request.form["MovieTitle"]
@@ -106,7 +106,7 @@ def searchQ():
         if not found:
             info += "找不到相關電影"
             
-        return info + "<br><a href='search'>回查詢頁面</a>"
+        return info + "<br><a href='movie2'>回查詢頁面</a>"
     
     else:  
         # 直接在這裡寫 HTML 表單，就不需要 input.html 檔案了！
