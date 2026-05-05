@@ -44,8 +44,61 @@ def index():
     link += "<a href=/movie>讀取開眼電影即將上映影片，寫入Firestore</a><hr>"
     link += "<a href=/movie2>查詢開眼電影即將上映電影</a><hr>"
     link += "<a href=/road>十大肇事路口</a><hr>"
+    link += "<a href=/weather>查詢天氣</a><hr>"
 
     return link  
+
+
+@app.route("/weather", methods=["GET", "POST"])
+def weather():
+    # 這裡先定義好查詢框的 HTML，讓頁面隨時都有框框可以輸入
+    search_form = """
+        <form method="post">
+            <p>請輸入欲查詢的縣市：
+            <input type="text" name="city" placeholder="例如：臺中市" />
+            <button type="submit">查詢天氣</button>
+            </p>
+        </form>
+        <hr>
+    """
+
+    if request.method == "POST":
+        city = request.form.get("city")
+        if not city:
+            return search_form + "請輸入縣市名稱！<br><a href='/'>回首頁</a>"
+        
+        city = city.replace("台", "臺")
+        # 記得 API Key 要用你自己的喔！
+        token = "rdec-key-123-45678-011121314"
+        url = f"https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization={token}&format=JSON&locationName={city}"
+        
+        try:
+            data = requests.get(url).json()
+            # 檢查 API 是否有回傳資料
+            if not data["records"]["location"]:
+                return search_form + f"找不到「{city}」的資料，請確認縣市名稱是否正確<br><a href='/'>回首頁</a>"
+
+            location = data["records"]["location"][0]
+            weather_element = location["weatherElement"]
+            
+            # 抓取第一個時段的天氣狀態與降雨機率
+            weather_state = weather_element[0]["time"][0]["parameter"]["parameterName"]
+            rain_chance = weather_element[1]["time"][0]["parameter"]["parameterName"]
+            
+            # 把查詢框放在結果上面，這樣可以連續查詢
+            res = search_form
+            res += f"<h3>{city} 目前天氣預報</h3>"
+            res += f"天氣狀況：{weather_state}<br>"
+            res += f" 降雨機率：{rain_chance}%<br>"
+            res += "<br><a href='/'>回首頁</a>"
+            return res
+            
+        except Exception as e:
+            return search_form + f"發生錯誤：{e}<br><a href='/'>回首頁</a>"
+
+    # GET 請求時（第一次進入頁面）只顯示查詢框
+    return search_form + "<a href='/'>回首頁</a>"
+       
 
 @app.route("/road")
 def road():
