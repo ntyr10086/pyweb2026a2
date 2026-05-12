@@ -53,39 +53,41 @@ def webhook():
     # 建立 request 物件
     req = request.get_json(force=True)
     
-    # 從 json 中取得 action
+    # 從 JSON 中取得 action
     action = req["queryResult"]["action"]
-    
+
     if (action == "rateChoice"):
-        # 取得使用者選擇的分級
+        # 取得使用者選擇的分級 (例如：普遍級)
         rate = req["queryResult"]["parameters"]["rate"]
-        info = "我是張煊佩設計的電影聊天機器人，您選擇的電影分級是：" + rate + "\n"
         
-        # --- 參考圖片加入的 Firestore 查詢邏輯 ---
+        # 設定初始的回應文字，包含你的姓名
+        info = "我是張煊佩設計的電影聊天機器人，您選擇的電影分級是：" + rate + "\n"
+        info += "以下是符合該分級的電影：\n\n"
+        
+        # 依照圖片裡的邏輯去 Firestore 查詢
         db = firestore.client()
-        # 注意：這裡的集合名稱要跟你在 /rate 路由存進去的一樣喔！
+        # 注意：集合名稱要跟你在 /rate 路由裡存的一樣喔！
         collection_ref = db.collection("本週新片含分級")
         docs = collection_ref.get()
         
         result = ""
         for doc in docs:
             m_dict = doc.to_dict()
-            # 判斷電影分級是否包含使用者選的關鍵字
+            # 判斷分級是否符合
             if rate in m_dict.get("rate", ""):
                 result += "片名：" + m_dict.get("title", "無題") + "\n"
-                result += "介紹：" + m_dict.get("hyperlink", "無連結") + "\n\n"
+                result += "介紹：" + m_dict.get("hyperlink", "") + "\n\n"
         
+        # 如果沒找到符合的電影
         if result == "":
-            info += "找不到這個分級的電影"
-        else:
-            info += "為您找到以下電影：\n" + result
-        # ---------------------------------------
+            result = "目前沒有找到符合此分級的電影"
+            
+        info += result
 
     else:
-        info = "您好，我是張煊佩設計的機器人，目前我不清楚這個動作 (" + action + ") 要做什麼"
+        info = "收到動作：" + action
 
     return make_response(jsonify({"fulfillmentText": info}))
-
 
 @app.route("/weather", methods=["GET", "POST"])
 def weather():
