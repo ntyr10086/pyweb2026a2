@@ -50,44 +50,44 @@ def index():
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    # 建立 request 物件
+    # 取得 Dialogflow 傳來的 JSON 資料
     req = request.get_json(force=True)
     
-    # 從 JSON 中取得 action
+    # 取得對應的 action 與參數
     action = req["queryResult"]["action"]
-
+    
     if (action == "rateChoice"):
         # 取得使用者選擇的分級 (例如：普遍級)
         rate = req["queryResult"]["parameters"]["rate"]
         
-        # 設定初始的回應文字，包含你的姓名
+        # 初始回覆訊息，記得包含你的名字喔！
         info = "我是張煊佩設計的電影聊天機器人，您選擇的電影分級是：" + rate + "\n"
-        info += "以下是符合該分級的電影：\n\n"
+        info += "以下是為您推薦的電影清單：\n"
         
-        # 依照圖片裡的邏輯去 Firestore 查詢
+        # 連接到 Firestore 並讀取「本週新片含分級」集合
         db = firestore.client()
-        # 注意：集合名稱要跟你在 /rate 路由裡存的一樣喔！
         collection_ref = db.collection("本週新片含分級")
         docs = collection_ref.get()
         
         result = ""
+        found = False
         for doc in docs:
             m_dict = doc.to_dict()
-            # 判斷分級是否符合
+            # 檢查這部電影的分級是否符合使用者的選擇
             if rate in m_dict.get("rate", ""):
-                result += "片名：" + m_dict.get("title", "無題") + "\n"
-                result += "介紹：" + m_dict.get("hyperlink", "") + "\n\n"
+                found = True
+                result += "．" + m_dict["title"] + "\n"
         
-        # 如果沒找到符合的電影
-        if result == "":
-            result = "目前沒有找到符合此分級的電影"
-            
-        info += result
+        # 如果有找到電影就加進去，沒找到就回傳提示
+        if found:
+            info += result
+        else:
+            info += "目前沒有符合該分級的電影"
 
-    else:
-        info = "收到動作：" + action
+        return make_response(jsonify({"fulfillmentText": info}))
 
-    return make_response(jsonify({"fulfillmentText": info}))
+    # 如果不是這個 action，可以回傳預設訊息
+    return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
 
 @app.route("/weather", methods=["GET", "POST"])
 def weather():
