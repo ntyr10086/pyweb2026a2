@@ -6,7 +6,7 @@ import os
 import json
 import firebase_admin
 from firebase_admin import credentials, firestore
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response, jsonify
 from datetime import datetime
 import random
 
@@ -37,7 +37,6 @@ def index():
     link += "<a href=/app>數學運算</a><hr>"
     link += "<a href=/cup>擲茭</a><hr>"
     link += "<a href=/read>讀取Firestore資料</a><hr>"
-    # 老師查詢表單
     link += "<a href=/search>查詢老師及其研究室</a><hr>"
     link += "<a href=/spider1>爬蟲</a><hr>"
     link += "<a href=/spider2>查詢即將上映電影</a><hr>"
@@ -48,6 +47,17 @@ def index():
     link += "<a href=/rate>本週新片進DB</a><hr>"
 
     return link  
+
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    # build a request object
+    req = request.get_json(force=True)
+    # fetch queryResult from json
+    action =  req.get("queryResult").get("action")
+    msg =  req.get("queryResult").get("queryText")
+    info = "動作：" + action + "； 查詢內容：" + msg
+    return make_response(jsonify({"fulfillmentText": info}))
+
 
 
 @app.route("/weather", methods=["GET", "POST"])
