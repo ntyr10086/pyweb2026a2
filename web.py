@@ -84,10 +84,10 @@ def webhook():
             # 檢查這部電影的分級是否符合使用者的選擇
             if rate in m_dict.get("rate", ""):
                 found = True
-                # 💡 從資料庫抓取電影連結
+                # 💡 從 Firestore 資料庫抓取每部電影的連結
                 m_link = m_dict.get("link", "")
                 
-                # 如果資料庫有連結就加在後面，沒有就只顯示片名
+                # 如果有連結就加在電影片名後面，沒有就只顯示片名
                 if m_link:
                     result += "．" + m_dict["title"] + " " + m_link + "\n"
                 else:
@@ -103,6 +103,7 @@ def webhook():
         
     # 如果不是這個 action，可以回傳預設訊息
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
+    
 @app.route("/weather", methods=["GET", "POST"])
 def weather():
     # 這裡先定義好查詢框的 HTML，讓頁面隨時都有框框可以輸入
