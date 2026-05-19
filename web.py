@@ -84,8 +84,8 @@ def webhook():
             # 檢查這部電影的分級是否符合使用者的選擇
             if rate in m_dict.get("rate", ""):
                 found = True
-                # 💡 從 Firestore 資料庫抓取每部電影的連結
-                m_link = m_dict.get("link", "")
+                # 💡 修正這裡：配合爬蟲那邊的設定，改成抓取 "hyperlink" 欄位！
+                m_link = m_dict.get("hyperlink", "")
                 
                 # 如果有連結就加在電影片名後面，沒有就只顯示片名
                 if m_link:
