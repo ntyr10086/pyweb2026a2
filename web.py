@@ -84,12 +84,12 @@ def webhook():
             # 檢查這部電影的分級是否符合使用者的選擇
             if rate in m_dict.get("rate", ""):
                 found = True
-                # 從 Firestore 資料庫抓取每部電影的連結
+                # 抓取開眼電影的 hyperlink 欄位
                 m_link = m_dict.get("hyperlink", "")
                 
-                # 💡 修改這裡：讓它呈現「．片名 連結：http...」的格式
+                # 💡 修改這裡：把連結放到片名的下一行（前面加一個空格或縮排更好看）
                 if m_link:
-                    result += "．" + m_dict["title"] + " 連結：" + m_link + "\n"
+                    result += "．" + m_dict["title"] + "\n  連結：" + m_link + "\n"
                 else:
                     result += "．" + m_dict["title"] + "\n"
                     
