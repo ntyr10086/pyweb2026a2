@@ -52,7 +52,7 @@ def index():
 
 
 @app.route("/demo")
-def course():
+def demo():
     return render_template("demo.html")
 
 @app.route("/webhook", methods=["POST"])
