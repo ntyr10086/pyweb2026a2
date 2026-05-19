@@ -45,7 +45,7 @@ def index():
     link += "<a href=/road>十大肇事路口</a><hr>"
     link += "<a href=/weather>查詢天氣</a><hr>"
     link += "<a href=/rate>本週新片進DB</a><hr>"
-    link += "<a href=/demo>聊天機器人</a><hr>"
+    link += "<a href=/demo>電影機器人</a><hr>"
 
     return link  
 
@@ -78,21 +78,29 @@ def webhook():
         
         result = ""
         found = False
+        
         for doc in docs:
             m_dict = doc.to_dict()
             # 檢查這部電影的分級是否符合使用者的選擇
             if rate in m_dict.get("rate", ""):
                 found = True
-                result += "．" + m_dict["title"] + "\n"
-        
+                # 這裡取得電影連結，如果沒有填連結就預設給空字串
+                m_link = m_dict.get("link", "")
+                
+                # 把連結一起組裝進去回覆訊息裡
+                if m_link:
+                    result += "．" + m_dict["title"] + " 🎬 連結：" + m_link + "\n"
+                else:
+                    result += "．" + m_dict["title"] + "\n"
+                    
         # 如果有找到電影就加進去，沒找到就回傳提示
         if found:
             info += result
         else:
             info += "目前沒有符合該分級的電影"
-
+            
         return make_response(jsonify({"fulfillmentText": info}))
-
+        
     # 如果不是這個 action，可以回傳預設訊息
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
 
