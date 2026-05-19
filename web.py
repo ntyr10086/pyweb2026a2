@@ -84,12 +84,12 @@ def webhook():
             # 檢查這部電影的分級是否符合使用者的選擇
             if rate in m_dict.get("rate", ""):
                 found = True
-                # 這裡取得電影連結，如果沒有填連結就預設給空字串
+                # 💡 從資料庫抓取電影連結
                 m_link = m_dict.get("link", "")
                 
-                # 把連結一起組裝進去回覆訊息裡
+                # 如果資料庫有連結就加在後面，沒有就只顯示片名
                 if m_link:
-                    result += "．" + m_dict["title"] + " 🎬 連結：" + m_link + "\n"
+                    result += "．" + m_dict["title"] + " " + m_link + "\n"
                 else:
                     result += "．" + m_dict["title"] + "\n"
                     
@@ -103,7 +103,6 @@ def webhook():
         
     # 如果不是這個 action，可以回傳預設訊息
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
-
 @app.route("/weather", methods=["GET", "POST"])
 def weather():
     # 這裡先定義好查詢框的 HTML，讓頁面隨時都有框框可以輸入
