@@ -87,7 +87,7 @@ def webhook():
                 # 抓取開眼電影的 hyperlink 欄位
                 m_link = m_dict.get("hyperlink", "")
                 
-                # 💡 修改這裡：把連結放到片名的下一行（前面加一個空格或縮排更好看）
+               
                 if m_link:
                     result += "．" + m_dict["title"] + "\n  連結：" + m_link + "\n"
                 else:
@@ -103,7 +103,11 @@ def webhook():
         
     # 如果不是這個 action，可以回傳預設訊息
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
-    
+ 
+app = Flask(__name__)
+
+client = genai.Client()
+
 @app.route("/weather", methods=["GET", "POST"])
 def weather():
     # 這裡先定義好查詢框的 HTML，讓頁面隨時都有框框可以輸入
