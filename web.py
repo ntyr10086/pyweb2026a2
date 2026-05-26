@@ -95,21 +95,21 @@ def demo():
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    # 取得 Dialogflow 傳來的 JSON 資料
+ 
     req = request.get_json(force=True)
     
-    # 取得對應的 action 與參數
+
     action = req["queryResult"]["action"]
     
     if (action == "rateChoice"):
-        # 取得使用者選擇的分級 (例如：普遍級)
+    
         rate = req["queryResult"]["parameters"]["rate"]
         
-        # 初始回覆訊息，記得包含你的名字喔！
+     
         info = "我是張煊佩設計的電影聊天機器人，您選擇的電影分級是：" + rate + "\n"
         info += "以下是為您推薦的電影清單：\n"
         
-        # 連接到 Firestore 並讀取「本週新片含分級」集合
+        合
         db = firestore.client()
         collection_ref = db.collection("本週新片含分級")
         docs = collection_ref.get()
@@ -119,10 +119,10 @@ def webhook():
         
         for doc in docs:
             m_dict = doc.to_dict()
-            # 檢查這部電影的分級是否符合使用者的選擇
+           
             if rate in m_dict.get("rate", ""):
                 found = True
-                # 抓取開眼電影的 hyperlink 欄位
+               
                 m_link = m_dict.get("hyperlink", "")
                 
                
@@ -131,7 +131,7 @@ def webhook():
                 else:
                     result += "．" + m_dict["title"] + "\n"
                     
-        # 如果有找到電影就加進去，沒找到就回傳提示
+      
         if found:
             info += result
         else:
@@ -139,10 +139,11 @@ def webhook():
             
         return make_response(jsonify({"fulfillmentText": info}))
         
-    # 如果不是這個 action，可以回傳預設訊息
+    
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
  
-
+elif (action == "input.unknown"):
+        info =  req["queryResult"]["queryText"]
 
 
 @app.route("/weather", methods=["GET", "POST"])
