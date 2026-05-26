@@ -24,8 +24,8 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 app = Flask(__name__)
+client = genai.Client()
 
-# --- 2. 路由設定 ---
 
 @app.route("/")
 def index():
@@ -106,7 +106,7 @@ def webhook():
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
  
 
-client = genai.Client()
+
 
 @app.route("/weather", methods=["GET", "POST"])
 def weather():
