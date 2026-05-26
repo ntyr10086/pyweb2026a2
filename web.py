@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from google import genai
-
+from google.genai import types
 
 import os
 import json
@@ -131,9 +131,25 @@ def webhook():
         return make_response(jsonify({"fulfillmentText": info}))
         
     
+    
     elif (action == "input.unknown"):
-        info = req["queryResult"]["queryText"]
-        return make_response(jsonify({"fulfillmentText": "聽不懂你說的「" + info + "」耶，可以再說一次嗎？"}))
+       
+        info = req["queryResult"]["queryText"] 
+        
+        
+        ai_config = types.GenerateContentConfig(
+            max_output_tokens = 500
+        )
+        
+        
+        response = client.models.generate_content(
+            model='gemini-2.5-flash', 
+            contents=info,            
+            config=ai_config,         
+        )
+
+        # 4. 把處理好的 Gemini 回答丟回給 Dialogflow（後面多餘的舊 return 已經幫你拿掉囉！）
+        return make_response(jsonify({"fulfillmentText": response.text}))
         
     
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
