@@ -52,7 +52,7 @@ def index():
     link += "<a href=/demo>聊天機器人</a><hr>"
     link += "<a href=/AI>AI</a><hr>"
     link += "<a href=/ask>詢問Gemini</a><hr>"
-    link += "<a href=/messager>AI Messager</a><hr>"
+
 
 
 
@@ -76,10 +76,6 @@ def ask():
     else:    
         # 當使用者直接打開網頁 (GET) 時，顯示輸入框畫面
         return render_template("ask.html")
-
-@app.route("/messager")
-def demo():
-    return render_template("Messenger.html")
 
 @app.route("/AI")
 def AI():
