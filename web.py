@@ -105,7 +105,6 @@ def webhook():
     # 如果不是這個 action，可以回傳預設訊息
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
  
-app = Flask(__name__)
 
 client = genai.Client()
 
