@@ -95,21 +95,16 @@ def demo():
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
- 
     req = request.get_json(force=True)
-    
-
     action = req["queryResult"]["action"]
     
-    if (action == "rateChoice"):
     
+    if (action == "rateChoice"):
         rate = req["queryResult"]["parameters"]["rate"]
         
-     
         info = "我是張煊佩設計的電影聊天機器人，您選擇的電影分級是：" + rate + "\n"
         info += "以下是為您推薦的電影清單：\n"
         
-        合
         db = firestore.client()
         collection_ref = db.collection("本週新片含分級")
         docs = collection_ref.get()
@@ -119,19 +114,15 @@ def webhook():
         
         for doc in docs:
             m_dict = doc.to_dict()
-           
             if rate in m_dict.get("rate", ""):
                 found = True
-               
                 m_link = m_dict.get("hyperlink", "")
                 
-               
                 if m_link:
-                    result += "．" + m_dict["title"] + "\n  連結：" + m_link + "\n"
+                    result += "．" + m_dict["title"] + "\n 連結：" + m_link + "\n"
                 else:
                     result += "．" + m_dict["title"] + "\n"
                     
-      
         if found:
             info += result
         else:
@@ -140,10 +131,12 @@ def webhook():
         return make_response(jsonify({"fulfillmentText": info}))
         
     
+    elif (action == "input.unknown"):
+        info = req["queryResult"]["queryText"]
+        return make_response(jsonify({"fulfillmentText": "聽不懂你說的「" + info + "」耶，可以再說一次嗎？"}))
+        
+    
     return make_response(jsonify({"fulfillmentText": "抱歉，我不確定該怎麼處理這個請求。"}))
- 
-elif (action == "input.unknown"):
-        info =  req["queryResult"]["queryText"]
 
 
 @app.route("/weather", methods=["GET", "POST"])
